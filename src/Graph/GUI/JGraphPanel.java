@@ -65,6 +65,7 @@ public class JGraphPanel extends JPanel {
                         currenEdge.getNode2().getPosX() * Constants.SIZE_MULTIPLIKATOR,
                         currenEdge.getNode2().getPosY()	* Constants.SIZE_MULTIPLIKATOR);
             }
+            dijkstraPath = null;
         }
 
         // MCST

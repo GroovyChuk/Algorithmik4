@@ -113,18 +113,25 @@ public class JLeftMenuPanel extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 if (jAlgorithmComboBox.getSelectedItem() == Constants.ALGORITHM_MCST) {
                     jStartNodeTextField.setText("");
+                    jEndNodeTextField.setText("");
+
                     whichAlgorithm = Constants.ALGORITHMS[0];
+
                     jEndNodeTextField.setVisible(false);
                     jEndNodeLabel.setVisible(false);
+
                     jGraphPanel.setDrawPi(false);
                     jGraphPanel.repaint();
                 }
                 else{
                     whichAlgorithm = Constants.ALGORITHMS[1];
                     jStartNodeTextField.setText("");
+
                     jEndNodeTextField.setVisible(true);
                     jEndNodeLabel.setVisible(true);
+
                     jButtonStartAlgorithm.setEnabled(false);
+
                     jGraphPanel.setDrawPi(false);
                     jGraphPanel.repaint();
                 }
