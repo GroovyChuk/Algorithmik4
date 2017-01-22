@@ -11,9 +11,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by Kalaman on 09.01.17.
- */
 public class CSVReader {
 
     public static HashMap<String,Node> nodeHashMap = new HashMap<>();

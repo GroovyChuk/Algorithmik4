@@ -27,9 +27,10 @@ public class Edge {
 
     public String toString()
     {
-        if (value % 2 == 0)
-            return String.valueOf((int)value);
-        else
-            return String.format("%.2f", value);
+        return String.valueOf((int)value);
+    }
+
+    public double getWeight() {
+        return value;
     }
 }

@@ -55,4 +55,6 @@ public class Constants {
 
     public static final Node DEFAULT_NODE = new Node("-1",1337,1337);
 
+    public static final double INFINITY = 999999;
+
 }

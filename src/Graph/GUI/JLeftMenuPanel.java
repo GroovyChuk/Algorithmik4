@@ -1,6 +1,7 @@
 package Graph.GUI;
 
 import Graph.Node;
+import Graph.Utilities.Algorithm;
 import Graph.Utilities.CSVReader;
 import Graph.Utilities.Constants;
 
@@ -8,12 +9,16 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.AlgorithmConstraints;
 
 
 public class JLeftMenuPanel extends JPanel{
+
+    private static final long serialVersionUID = 1L;
 
     JButton jButtonStartAlgorithm;
 
@@ -24,11 +29,10 @@ public class JLeftMenuPanel extends JPanel{
     JLabel jEndNodeLabel;
 
     JComboBox jAlgorithmComboBox;
+    String whichAlgorithm = Constants.ALGORITHMS[0];
 
     JPanel boxLayoutPanel;
     public JGraphPanel jGraphPanel;
-
-    public static JTextArea menuConsole;
 
     public static Node startNode = Constants.DEFAULT_NODE;
     public static Node endNode = Constants.DEFAULT_NODE;
@@ -45,8 +49,7 @@ public class JLeftMenuPanel extends JPanel{
         addFlowLayout();
         addTextFieldListeners();
         addComboBoxListeners();
-
-        writeToConsole("Ready ...");
+        addButtonListeners();
 
         this.jGraphPanel = jGraphPanel;
         this.add(jButtonStartAlgorithm,BorderLayout.SOUTH);
@@ -56,13 +59,6 @@ public class JLeftMenuPanel extends JPanel{
         boxLayoutPanel = new JPanel();
         boxLayoutPanel.setLayout(new BoxLayout(boxLayoutPanel,BoxLayout.Y_AXIS));
 
-        //Lets the console auto scroll
-        DefaultCaret caret = (DefaultCaret)menuConsole.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        JScrollPane scrollPane = new JScrollPane(menuConsole);
-
-        this.add(scrollPane,BorderLayout.NORTH);
         this.add(boxLayoutPanel);
     }
 
@@ -95,12 +91,6 @@ public class JLeftMenuPanel extends JPanel{
         //boxLayoutPanel;
     }
 
-    public static void writeToConsole (String message){
-        if (menuConsole.getText().length() > 0)
-            menuConsole.setText(menuConsole.getText() + "\n-> " + message);
-        else
-            menuConsole.setText("-> " + message);
-    }
 
     public void initComponents()
     {
@@ -112,10 +102,8 @@ public class JLeftMenuPanel extends JPanel{
         jAlgorithmComboBox = new JComboBox(Constants.ALGORITHMS);
 
         jButtonStartAlgorithm.setEnabled(false);
-
-        menuConsole = new JTextArea(13,1);
-        menuConsole.setSize(new Dimension(Constants.PANEL_LEFT_MENU_SIZE_X,120));
-        menuConsole.setEditable(false);
+        jEndNodeTextField.setVisible(false);
+        jEndNodeLabel.setVisible(false);
     }
 
     private void addComboBoxListeners ()
@@ -123,7 +111,39 @@ public class JLeftMenuPanel extends JPanel{
         jAlgorithmComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                writeToConsole(e.getActionCommand());
+                if (jAlgorithmComboBox.getSelectedItem() == Constants.ALGORITHM_MCST) {
+                    jStartNodeTextField.setText("");
+                    whichAlgorithm = Constants.ALGORITHMS[0];
+                    jEndNodeTextField.setVisible(false);
+                    jEndNodeLabel.setVisible(false);
+                    jGraphPanel.setDrawPi(false);
+                    jGraphPanel.repaint();
+                }
+                else{
+                    whichAlgorithm = Constants.ALGORITHMS[1];
+                    jStartNodeTextField.setText("");
+                    jEndNodeTextField.setVisible(true);
+                    jEndNodeLabel.setVisible(true);
+                    jButtonStartAlgorithm.setEnabled(false);
+                    jGraphPanel.setDrawPi(false);
+                    jGraphPanel.repaint();
+                }
+            }
+        });
+    }
+
+    private void addButtonListeners (){
+        jButtonStartAlgorithm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (whichAlgorithm == Constants.ALGORITHM_MCST) {
+                    Algorithm.graphMCST(startNode, jGraphPanel);
+                    jGraphPanel.repaint();
+                }
+                else{
+                    jGraphPanel.setDijkstraPath(Algorithm.graphDijkstra(startNode, endNode, jGraphPanel));
+                    jGraphPanel.repaint();
+                }
             }
         });
     }
@@ -184,9 +204,10 @@ public class JLeftMenuPanel extends JPanel{
                     case NODE_END:
                         endNode = node;
                         break;
+                    default:
+                        break;
                 }
 
-                writeToConsole("Select Node " + input + " as " + nodeType);
 
                 jGraphPanel.repaint();
             }
@@ -202,18 +223,26 @@ public class JLeftMenuPanel extends JPanel{
                         endNode.changeNodeType(Constants.NODE_TYPE.NODE_NORMAL);
                         jGraphPanel.repaint();
                         break;
+                    default:
+                        break;
                 }
             }
 
         }catch(Exception ee){
             ee.printStackTrace();
         }
-
-        if (startNode.nodeType == Constants.NODE_TYPE.NODE_START
-                && endNode.nodeType == Constants.NODE_TYPE.NODE_END)
-            jButtonStartAlgorithm.setEnabled(true);
-        else
-            jButtonStartAlgorithm.setEnabled(false);
+        if (whichAlgorithm == Constants.ALGORITHM_MCST) {
+            if (startNode.nodeType == Constants.NODE_TYPE.NODE_START)
+                jButtonStartAlgorithm.setEnabled(true);
+            else
+                jButtonStartAlgorithm.setEnabled(false);
+        }else{
+            if (startNode.nodeType == Constants.NODE_TYPE.NODE_START
+                    && endNode.nodeType == Constants.NODE_TYPE.NODE_END)
+                jButtonStartAlgorithm.setEnabled(true);
+            else
+                jButtonStartAlgorithm.setEnabled(false);
+        }
 
     }
 
